@@ -221,15 +221,6 @@ namespace MemPool
 			return NULL;
 		}
 		
-		//Release all cached allocations back to the underlying memory space:
-		void flushCache()
-		{	if(not MemSpace::shouldCache) return;
-			lock.lock();
-			for(auto& entry: cache) MemSpace::free(entry.second);
-			cache.clear();
-			lock.unlock();
-		}
-
 	public:
 		//Release all cached allocations back to the underlying memory space:
 		void flushCache()

@@ -364,3 +364,14 @@ double SCF::eigDiffRMS(const std::vector<diagMatrix>& eigs1, const std::vector<d
 double SCF::eigDiffRMS(const std::vector<diagMatrix>& eigs1, const std::vector<diagMatrix>& eigs2) const
 {	return eigDiffRMS(eigs1, eigs2, e);
 }
+
+void SCF::offloadVariable(SCFvariable& v) const
+{	toCpu(v.n);
+	if(mixTau) toCpu(v.tau);
+	//rhoAtom matrices are always on CPU, no action needed
+}
+
+void SCF::preloadVariable(const SCFvariable& v) const
+{	toGpu(v.n);
+	if(mixTau) toGpu(v.tau);
+}
