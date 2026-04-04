@@ -118,6 +118,7 @@ void SCF::minimize()
 	else
 	{	//Single Pulay loop:
 		double E = eVars.elecEnergyAndGrad(e.ener, 0, 0, true); mpiWorld->bcast(E); //Compute energy (and ensure consistency to machine precision)
+		ManagedMemoryBase::flushGpuCache(); //Release init temporaries from GPU cache before SCF loop
 		Pulay<SCFvariable>::minimize(E, extraNames, extraThresh); //Optimize using Pulay mixer
 	}
 	
@@ -157,6 +158,7 @@ double SCF::cycle(double dEprev, std::vector<double>& extraValues)
 	mpiWorld->bcast(E); //ensure consistency to machine precision
 
 	extraValues[0] = eigDiffRMS(eigsPrev, e.eVars.Hsub_eigs);
+	ManagedMemoryBase::flushGpuCache(); //Release BandDavidson temporaries from GPU cache
 	return E;
 }
 
