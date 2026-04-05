@@ -124,6 +124,23 @@ This is necessary if you need to capture details in the capacitance of electroch
     fluid NonlinearPCM
     pcm-variant GLSSA13
 
++ <b>CANON</b>:
+The Charge-Asymmetric Nonlinear Optimally-Nonlocal (CANON) model \cite CANON
+combines a nonlocal cavity (similar to %SaLSA and CANDLE) with nonlinear dielectric
+and ionic response (like %NonlinearPCM) and additionally incorporates nonlocal
+response kernels.  This makes it the most physically complete continuum solvation
+model in JDFTx, particularly suitable for electrochemical interfaces under
+strong electric fields where dielectric saturation matters.
+CANON is currently parametrized for water only.
+
+    fluid NonlinearPCM
+    pcm-variant CANON
+
+The key CANON-specific parameters (adjustable via \ref CommandPcmParams) are
+Res (electrostatic nonlocality radius) and Zcenter (charge asymmetry parameter).
+Optional ionic screening is enabled by adding fluid-cation and fluid-anion components,
+in which case a separate ionic cavity can be controlled via ionSpacing.
+
 + <b>%SaLSA</b>:
 This solvation model directly captures the nonlocal response of the liquid using an angular mometum expansion
 (not continuum like the rest), and determines the cavity from an overlap of solute and solvent electron densities.

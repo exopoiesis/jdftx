@@ -1,0 +1,12 @@
+lattice Cubic 13
+coords-type Cartesian
+
+ion-species GBRV/$ID_pbe.uspp
+elec-cutoff 20 100
+
+coulomb-interaction isolated
+coulomb-truncation-embed 0 0 0
+
+electronic-scf
+
+dump End State BoundCharge FluidDensity FluidDebug

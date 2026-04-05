@@ -1,0 +1,14 @@
+include ${SRCDIR}/common.in
+
+dump-name screened.$VAR
+
+ion F  0.00  0.00  0.00  1
+elec-initial-charge +1
+
+fluid NonlinearPCM
+pcm-variant CANON
+fluid-solvent H2O
+fluid-cation Na+ 1.
+fluid-anion F- 1.
+
+ionic-minimize nIterations 10

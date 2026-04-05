@@ -1,0 +1,13 @@
+include ${SRCDIR}/common.in
+
+dump-name neutral.$VAR
+
+ion O  0.00  0.00  0.00  1
+ion H  0.00  1.12 +1.44  1
+ion H  0.00  1.12 -1.44  1
+
+fluid NonlinearPCM
+pcm-variant CANON
+fluid-solvent H2O
+
+ionic-minimize nIterations 10
