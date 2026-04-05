@@ -97,6 +97,7 @@ PCM::PCM(const Everything& e, const FluidSolverParams& fsp): FluidSolver(e,fsp)
 					"K. A. Schwarz and R. Sundararaman, under preparation (2024)");
 			cavitationNL = true;
 			dispNLunified = true;
+			sigmaVdw = getSigmaVdw(fsp.Ztot, solvent->Rvdw, fsp.nc);
 			Rex[0] = solvent->Rvdw;
 			if(fsp.ionSpacing)
 			{	shape.resize(2); //separate ionic cavity

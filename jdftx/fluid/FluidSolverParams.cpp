@@ -113,6 +113,7 @@ void FluidSolverParams::setPCMparams()
 			switch(solvents[0]->name)
 			{	case FluidComponent::H2O:
 					Ztot = 8;
+					sqrtC6eff = 0.770; //Using CANDLE H2O value; CANON-specific fit pending (Schwarz & Sundararaman, in prep.)
 					Res = 1.0 * Angstrom;
 					Zcenter = -0.8476;
 					break;

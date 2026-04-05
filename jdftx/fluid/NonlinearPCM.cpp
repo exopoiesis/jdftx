@@ -300,7 +300,7 @@ void NonlinearPCM::dumpDensities(const char* filenamePattern) const
 	//Output dielectric bound charge:
 	string filename;
 	{	ScalarField A, A_s_UNUSED; nullToZero(A, gInfo);
-		VectorField Dphi = I(gradient(phiTot));
+		VectorField Dphi = I(gradient(w1 ? w1*phiTot : phiTot)); //includes CANON nonlocality, if needed
 		VectorField& A_Dphi = Dphi; //Retrieve dA/dDphi = -P in place
 		(*dielectricEval)(dielEnergyLookup, shape[0], Dphi, A, A_Dphi, A_s_UNUSED);
 		ScalarField rhoDiel = divergence(A_Dphi); //bound charge due to dielectric (since A_Dphi = -P)

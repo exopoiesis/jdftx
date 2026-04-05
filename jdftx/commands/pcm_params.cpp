@@ -63,6 +63,7 @@ struct CommandPcmVariant : public Command
 		comments = "Select <variant> of LinearPCM or NonlinearPCM that determines\n"
 			"the cavity and related energies (cavitation, dispersion etc.).\n"
 			"CANDLE and SCCS variants are only supported for LinearPCM.\n"
+			"CANON is only supported for NonlinearPCM.\n"
 			"Here, <variant> must be one of:"
 			+ addDescriptions(pcmVariantMap.optionList(), linkDescription(pcmVariantMap, pcmVariantDescMap));
 		hasDefault = true;

@@ -32,7 +32,7 @@ for run in $runs; do
 done
 
 #Parse results:
-$testSrcDir/checkResults.sh | awk '
+bash $testSrcDir/checkResults.sh | awk '
 	NR==1 { nChecks = $1; iCheck = 0; nFail = 0; 
 		printf("%30s  %19s %19s Status\n", "Check name", "Obtained value", "Expected value");
 	}

@@ -62,6 +62,7 @@ See \ref Compiling and \ref Using for setting up and getting started with JDFTx.
 <b>Fluid</b>
 + Linear solvation: GLSSA13 \cite NonlinearPCM, SCCS \cite PCM-SCCS, CANDLE \cite CANDLE
 + Nonlinear solvation: GLSSA13 \cite NonlinearPCM \cite CavityWDA
++ Nonlinear nonlocal solvation: CANON \cite CANON
 + Nonlocal solvation: %SaLSA \cite SaLSA
 + JDFT with classical DFT fluids \cite RigidCDFT \cite PolarizableCDFT
 
@@ -107,6 +108,11 @@ as VASPsol \cite VASPsol; these models are identical.
 JDFTx also includes nonlinear solvation models \cite NonlinearPCM
 (option %NonlinearPCM in command \ref CommandFluid) that account for
 dielectric saturation and ionic nonlinearities in the fluid response.
+The CANON variant \cite CANON (pcm-variant CANON with %NonlinearPCM)
+combines nonlinear dielectric and ionic response with nonlocal response
+kernels and a nonlocal cavity, making it the most physically complete
+continuum model available in JDFTx, particularly suited for electrochemical
+interfaces under strong electric fields.
 Finally, the non-empirical solvation model SaLSA captures atomic-scale
 nonlocality of the fluid response at a linear-response level
 (option %SaLSA in command \ref CommandFluid).
