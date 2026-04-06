@@ -6,6 +6,6 @@ dump End State
 fluid LinearPCM
 pcm-variant GLSSA13
 fluid-solvent H2O
-pcm-params freezeCavity yes cavityFile step1_canon.Shape
+pcm-params freezeCavity yes cavityFile step1_canon.fluidShape
 
 ionic-minimize nIterations 0

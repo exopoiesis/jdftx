@@ -322,17 +322,13 @@ void PCM::updateCavity()
 			loadRawBinary(shape[0], fsp.cavityFile.c_str());
 			freezeCavityLoaded = true;
 			logPrintf("done. Cavity will NOT be updated during SCF.\n");
-			//Apply masks on first load, then skip all subsequent updates:
+			shapeVdw = shape[0]; //for models that use separate vdW cavity (CANDLE, SGA13)
+			//First call: fall through to mask application and cavitation/dispersion below
 		}
 		else
-		{	cavityChanged = false;
-		}
-		//Fall through to mask application and cavitation/dispersion below
-		if(!cavityChanged) goto cavityDone; //skip mask re-application too
-		goto applyMasks; //first call: apply masks, then compute cavitation/dispersion
+			return; //subsequent calls: cavity frozen, nothing to do
 	}
-
-	if(fsp.cavityFunction)
+	else if(fsp.cavityFunction)
 	{	fsp.cavityFunction(nCavity, shape);
 	}
 	else if(fsp.pcmVariant == PCM_SGA13)
@@ -378,7 +374,6 @@ void PCM::updateCavity()
 	else //Compute directly from nCavity (which is a density product for SaLSA and CANON):
 		ShapeFunction::compute(nCavity, shape[0], fsp.nc, fsp.sigma);
 	
-	applyMasks: //label for freezeCavity first-load path
 	//Apply cavity masks (if any):
 	if((zMask[0] || zMask[1]) && cavityChanged)
 	{	if(nShape==1)
@@ -478,7 +473,6 @@ void PCM::updateCavity()
 			break;
 		}
 	}
-	cavityDone: ; //label for freezeCavity skip path
 }
 
 void PCM::propagateCavityGradients(const ScalarFieldArray& A_shape, ScalarField& A_nCavity, ScalarFieldTilde& A_rhoExplicitTilde, IonicGradient* forces, matrix3<>* Adiel_RRT) const

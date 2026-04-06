@@ -3,7 +3,7 @@
 echo "7"
 
 # Test 1: CANON baseline produces Shape file
-if [ -f step1_canon.Shape ]; then echo "1 1 0 CANON Shape file dumped"; else echo "0 1 0 CANON Shape file dumped"; fi
+if [ -f step1_canon.fluidShape ]; then echo "1 1 0 CANON Shape file dumped"; else echo "0 1 0 CANON Shape file dumped"; fi
 awk '/IonicMinimize: Iter/ { E = $5 } END { print E, "-17.270 0.005 CANON baseline energy [Eh]" }' step1_canon.out
 
 # Test 2: CANDLE with frozen cavity from CANON converges (no charge sloshing!)
