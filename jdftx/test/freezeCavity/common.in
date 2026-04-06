@@ -1,0 +1,14 @@
+lattice Cubic 13
+coords-type Cartesian
+
+ion-species GBRV/$ID_pbe.uspp
+elec-cutoff 20 100
+
+coulomb-interaction isolated
+coulomb-truncation-embed 0 0 0
+
+ion O  0.00  0.00  0.00  1
+ion H  0.00  1.12 +1.44  1
+ion H  0.00  1.12 -1.44  1
+
+electronic-scf

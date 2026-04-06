@@ -145,6 +145,7 @@ struct FluidSolverParams
 	
 	//For fixed-cavity model alone:
 	string cavityFile; //!< filename of cavity to read in
+	bool freezeCavity; //!< if true and cavityFile is set, load cavity from file and freeze it (skip self-consistent cavity updates); works with any PCM variant
 	
 	//Cavity masking parameters (erf slab centered at zMask0 with half-width zMaskH where fluid is excluded):
 	double zMask0; //z center in lattice coordinates for cavity mask

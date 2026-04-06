@@ -1,0 +1,11 @@
+include ${SRCDIR}/common.in
+
+dump-name step2_candle_frozen.$VAR
+dump End State FluidDebug
+
+fluid LinearPCM
+pcm-variant CANDLE
+fluid-solvent H2O
+pcm-params freezeCavity yes cavityFile step1_canon.Shape
+
+ionic-minimize nIterations 0

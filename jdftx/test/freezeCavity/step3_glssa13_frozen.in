@@ -1,0 +1,11 @@
+include ${SRCDIR}/common.in
+
+dump-name step3_glssa13_frozen.$VAR
+dump End State
+
+fluid LinearPCM
+pcm-variant GLSSA13
+fluid-solvent H2O
+pcm-params freezeCavity yes cavityFile step1_canon.Shape
+
+ionic-minimize nIterations 0

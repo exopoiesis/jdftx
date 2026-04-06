@@ -72,6 +72,7 @@ private:
 	ScalarFieldArray zMask; //optional cavity mask function
 	int nShape; //natural number of shape functions of the solvation model (2 if ionspacing is used to make ionic cavity, else 1)
 	bool fixedCavityMasked; //!< whether mask has already been applied to fixed cavity
+	bool freezeCavityLoaded; //!< whether frozen cavity has been loaded from file
 protected:
 	std::vector<RadialFunctionG> Sf; //!< spherically-averaged structure factors for each solvent site
 	std::vector<int> atomicNumbers; //!< atomic number for each solvent site (for dispersion interactions)

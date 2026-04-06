@@ -117,6 +117,7 @@ enum PCMparameter
 	PCMp_Res, //! Electrostatic radius used for dielectric nonlocality in CANON
 	PCMp_Zcenter, //!< Charge at center used to determine asymmetry in CANON
 	PCMp_screenOverride, //! Overrides screening length
+	PCMp_freezeCavity, //!< If yes, load cavity from cavityFile and freeze it (no self-consistent cavity updates)
 	PCMp_Delim //!< Delimiter used in parsing
 };
 EnumStringMap<PCMparameter> pcmParamMap
@@ -141,7 +142,8 @@ EnumStringMap<PCMparameter> pcmParamMap
 	PCMp_Ztot, "Ztot",
   	PCMp_Res, "Res",
 	PCMp_Zcenter, "Zcenter",
-	PCMp_screenOverride, "screenOverride"
+	PCMp_screenOverride, "screenOverride",
+	PCMp_freezeCavity, "freezeCavity"
 );
 EnumStringMap<PCMparameter> pcmParamDescMap
 (	PCMp_lMax, "angular momentum truncation in SaLSA",
@@ -165,7 +167,8 @@ EnumStringMap<PCMparameter> pcmParamDescMap
 	PCMp_Ztot, "total valence charge on the solvent, used by CANDLE and CANON",
 	PCMp_Res, "electrostatic radius [bohrs] used for dielectric nonlocality in CANON",
 	PCMp_Zcenter, "charge at center used to determine asymmetry in CANON",
-	PCMp_screenOverride, "overrides the screening length calculated from fluid-components"
+	PCMp_screenOverride, "overrides the screening length calculated from fluid-components",
+	PCMp_freezeCavity, "if yes, load cavity from cavityFile and freeze it during SCF (breaks cavity-density feedback loop for metallic surfaces)"
 );
 
 struct CommandPcmParams : public Command
@@ -215,6 +218,12 @@ struct CommandPcmParams : public Command
 				READ_AND_CHECK(Res, >, 0.)
 				READ_AND_CHECK(Zcenter, <, DBL_MAX)
 				READ_AND_CHECK(screenOverride, >, 0.)
+				case PCMp_freezeCavity:
+				{	string boolStr;
+					pl.get(boolStr, string("no"), "yes|no", true);
+					fsp.freezeCavity = (boolStr == "yes");
+					break;
+				}
 				case PCMp_Delim: return; //end of input
 			}
 			#undef READ_AND_CHECK
@@ -232,6 +241,7 @@ struct CommandPcmParams : public Command
 		PRINT(cavityScale)
 		PRINT(ionSpacing)
 		logPrintf(" \\\n\tcavityFile %s", fsp.cavityFile.c_str());
+		logPrintf(" \\\n\tfreezeCavity %s", fsp.freezeCavity ? "yes" : "no");
 		PRINT(zMask0)
 		PRINT(zMaskH)
 		PRINT(zMaskIonH)

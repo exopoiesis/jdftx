@@ -64,7 +64,7 @@ inline double getSigmaVdw(double Ztot, double Rvdw, double nc)
 }
 
 
-PCM::PCM(const Everything& e, const FluidSolverParams& fsp): FluidSolver(e,fsp)
+PCM::PCM(const Everything& e, const FluidSolverParams& fsp): FluidSolver(e,fsp), freezeCavityLoaded(false)
 {
 	if(fsp.solvents.size() < 1) die("PCMs require exactly one solvent component - none specified.\n");
 	if(fsp.solvents.size() > 1) die("PCMs require exactly one solvent component - more than one specified.\n");
@@ -311,7 +311,27 @@ PCM::~PCM()
 void PCM::updateCavity()
 {
 	bool cavityChanged = true; //keep track of whether cavity is updated in code below (usually yes, except for SS)
-	
+
+	//Frozen cavity mode: load from file on first call, then never update
+	if(fsp.freezeCavity)
+	{	if(!freezeCavityLoaded)
+		{	if(!fsp.cavityFile.size())
+				die("freezeCavity requires cavityFile to be specified in pcm-params.\n\n");
+			logPrintf("   Loading frozen cavity from '%s' ... ", fsp.cavityFile.c_str()); logFlush();
+			nullToZero(shape[0], gInfo);
+			loadRawBinary(shape[0], fsp.cavityFile.c_str());
+			freezeCavityLoaded = true;
+			logPrintf("done. Cavity will NOT be updated during SCF.\n");
+			//Apply masks on first load, then skip all subsequent updates:
+		}
+		else
+		{	cavityChanged = false;
+		}
+		//Fall through to mask application and cavitation/dispersion below
+		if(!cavityChanged) goto cavityDone; //skip mask re-application too
+		goto applyMasks; //first call: apply masks, then compute cavitation/dispersion
+	}
+
 	if(fsp.cavityFunction)
 	{	fsp.cavityFunction(nCavity, shape);
 	}
@@ -358,6 +378,7 @@ void PCM::updateCavity()
 	else //Compute directly from nCavity (which is a density product for SaLSA and CANON):
 		ShapeFunction::compute(nCavity, shape[0], fsp.nc, fsp.sigma);
 	
+	applyMasks: //label for freezeCavity first-load path
 	//Apply cavity masks (if any):
 	if((zMask[0] || zMask[1]) && cavityChanged)
 	{	if(nShape==1)
@@ -457,13 +478,20 @@ void PCM::updateCavity()
 			break;
 		}
 	}
+	cavityDone: ; //label for freezeCavity skip path
 }
 
 void PCM::propagateCavityGradients(const ScalarFieldArray& A_shape, ScalarField& A_nCavity, ScalarFieldTilde& A_rhoExplicitTilde, IonicGradient* forces, matrix3<>* Adiel_RRT) const
 {
 	if(forces) forces->init(e.iInfo); //zero and initialize forces if needed
 	if(Adiel_RRT) *Adiel_RRT += Acavity_RRT; //add gradient of cavitation and dispersion interactions
-	
+
+	//Frozen cavity: no gradients w.r.t. nCavity (cavity does not depend on electron density)
+	if(fsp.freezeCavity)
+	{	nullToZero(A_nCavity, gInfo); //zero gradient: cavity is frozen
+		return;
+	}
+
 	//Account for cavity masks, if any
 	if(zMask[0] || zMask[1])
 	{	if(nShape==1)

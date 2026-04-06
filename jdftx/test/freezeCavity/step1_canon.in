@@ -1,0 +1,10 @@
+include ${SRCDIR}/common.in
+
+dump-name step1_canon.$VAR
+dump End State FluidDensity
+
+fluid NonlinearPCM
+pcm-variant CANON
+fluid-solvent H2O
+
+ionic-minimize nIterations 0
