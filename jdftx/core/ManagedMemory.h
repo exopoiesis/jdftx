@@ -50,6 +50,7 @@ protected:
 	bool onGpu; //!< For reduced \#ifdef's, this flag is retained even in the absence of gpu support
 	void toCpu() const; //!< move data to the CPU (does nothing without GPU_ENABLED); logically const, but data location may change
 	void toGpu() const; //!< move data to the GPU (does nothing without GPU_ENABLED); logically const, but data location may change
+	void copyGpuToCpu(void* dest, size_t byteOffset, size_t bytes) const; //!< Non-destructive GPU->CPU copy (data stays on GPU)
 };
 
 //! Base class for managed memory of a specified data type
@@ -88,6 +89,12 @@ public:
 
 	size_t nData() const { return nElem; } //!< number of data points
 	bool isOnGpu() const { return onGpu; } //!< Check where the data is (for \#ifdef simplicity exposed even when no GPU_ENABLED)
+
+	//! Non-destructive copy from GPU to CPU buffer (data remains on GPU unchanged)
+	//! Copies \a count elements starting from element \a elemOffset into \a dest
+	void gpuCopyOut(T* dest, size_t elemOffset, size_t count) const
+	{	copyGpuToCpu(dest, elemOffset * sizeof(T), count * sizeof(T));
+	}
 
 	//Iterator access on CPU:
 	T* begin() { return data(); } //!< pointer to start of array
@@ -286,7 +293,20 @@ template<typename T> void MPIUtil::freadData(ManagedMemory<T>& v, File fp) const
 {	fread(v.data(), sizeof(T), v.nData(), fp);
 }
 template<typename T> void MPIUtil::fwriteData(const ManagedMemory<T>& v, File fp) const
-{	fwrite(v.data(), sizeof(T), v.nData(), fp);
+{	if(v.isOnGpu()) //Non-destructive write: stage GPU data through CPU buffer
+	{	const size_t chunkElems = 4*1024*1024; //4M elements per chunk (~64 MB for complex)
+		size_t total = v.nData();
+		size_t chunk = (total < chunkElems) ? total : chunkElems;
+		std::vector<T> staging(chunk);
+		for(size_t off = 0; off < total; off += chunk)
+		{	size_t count = total - off;
+			if(count > chunk) count = chunk;
+			v.gpuCopyOut(staging.data(), off, count);
+			fwrite(staging.data(), sizeof(T), count, fp);
+		}
+		return;
+	}
+	fwrite(v.data(), sizeof(T), v.nData(), fp);
 }
 
 

@@ -35,3 +35,13 @@ done
 
 wait $JDFTX_PID 2>/dev/null
 echo "jdftx exited with code $?"
+
+#Run 3: LCAO dump-interval (tests non-destructive GPU write during LCAO)
+echo "=== Run: lcaoDump (dump-interval Electronic during LCAO) ==="
+rm -f lcaoDump.*
+$JDFTX -i "$testSrcDir/lcaoDump.in" -d -o lcaoDump.out
+
+#Run 4: Restart from LCAO-phase wfns (tests that dumped wfns are usable)
+echo "=== Run: lcaoDumpRestart (restart from LCAO wfns) ==="
+rm -f lcaoDumpRestart.*
+$JDFTX -i "$testSrcDir/lcaoDumpRestart.in" -d -o lcaoDumpRestart.out

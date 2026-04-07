@@ -447,6 +447,16 @@ void ManagedMemoryBase::toGpu() const
 #endif
 }
 
+// Non-destructive GPU->CPU copy (data remains on GPU unchanged)
+void ManagedMemoryBase::copyGpuToCpu(void* dest, size_t byteOffset, size_t bytes) const
+{
+#ifdef GPU_ENABLED
+	assert(onGpu && c && dest);
+	cudaMemcpy(dest, ((const char*)c) + byteOffset, bytes, cudaMemcpyDeviceToHost);
+	gpuErrorCheck();
+#endif
+}
+
 //--------- ManagedMemory<complex> and ManagedMemory<double> operators ------
 
 void scale(double alpha, ManagedMemory<double>& y)

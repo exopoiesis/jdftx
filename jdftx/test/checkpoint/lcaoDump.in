@@ -1,0 +1,8 @@
+include ${SRCDIR}/common.in
+
+#Test periodic dump during LCAO minimization (non-destructive GPU write)
+dump End State Ecomponents
+dump Electronic State
+dump-interval Electronic 2
+dump-name lcaoDump.$VAR
+lcao-params 6

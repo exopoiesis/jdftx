@@ -1,0 +1,6 @@
+include ${SRCDIR}/common.in
+
+#Test restart from wfns dumped during LCAO phase
+initial-state lcaoDump.$VAR
+dump End State Ecomponents
+dump-name lcaoDumpRestart.$VAR
